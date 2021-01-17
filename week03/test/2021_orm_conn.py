@@ -32,6 +32,7 @@ from sqlalchemy import DateTime
 class Author_table(Base):
     __tablename__ = 'authororm'
     user_id = Column(Integer(), primary_key=True)
+    # nullable 是否可谓Null，默认是True
     username = Column(String(15), nullable=False, unique=True)
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
