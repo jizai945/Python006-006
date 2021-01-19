@@ -19,5 +19,6 @@ urlpatterns=[
     ### 自定义过滤器
     # path('<myint:year>', views.myyear),
     path('<yyyy:year>', views.year),
+    path('books', views.books),
 ]
 

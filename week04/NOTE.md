@@ -606,3 +606,65 @@ return query
 
 ### ORM API
 
+数据表的读写
+
+python manage.py shell
+
+```shell
+from index-models import *
+n = Name()
+n.name = '红楼梦'
+n.author='曹雪芹'
+n.stars=9.6
+n.save()
+
+# 使用ORM框架api实现
+# 增
+from index.models import *
+Name.objects.create(name='红楼梦', author='曹雪芹', stars='9.6')
+Name.objects.create(name='活着', author='余华', stars='9.4')
+
+# 查
+Name.objects.get(id=2).name
+
+# 改
+Name.objects.filter(name='红楼梦').update(name='石头记')
+
+# 删
+# 单条数据  filter相当于mysql中的WHERE
+Name.objects.filter(name='红楼梦').delete()
+# 全部数据
+Name.objects.all().delete
+
+# 其他常用查询
+Name.objects.create(name='红楼梦', author='曹雪芹', stars='9.6')
+Name.objects.create(name='活着', author='余华', stars='9.4')
+Name.objects.all()[0].name
+n = Name.objects.all()
+n[0].name
+n[1].name
+
+Name.objects.values_list('name')
+Name.objects.values_list('name')[0]
+# filter支持更多查询条件
+filter(name=xxx, id=yyy)
+
+# 可以引用python的函数 比如count就是python的方法
+Name.objects.values_list('name').count()
+```
+
+
+
+## 模板
+
++   模板变量{{variables}}
++   从URL获取模板变量{% url 'urlyear' 2020%}    在django中相当于从html返回到urls.py查找urlyear,再从views.py中找到对应的函数,在html中写灵活的链接时用到
++   读取静态资源内容 {%static"css/header.css"%}
++   for遍历标签{% for type in type_list %}{% endfor %}
++   if判断标签{% if name.type==type.type %}{% endif %}
+
+
+
+## 展示数据库中的内容
+
+==locals方法可以一次性把所有参数传递过去==
