@@ -668,3 +668,147 @@ Name.objects.values_list('name').count()
 ## 展示数据库中的内容
 
 ==locals方法可以一次性把所有参数传递过去==
+
+
+
+## 豆瓣页面展示功能的需求分析
+
+URLConf对网址做处理
+
+
+
+## urlconf与models配置
+
+
+
+URLconf的处理
+
+http://ip/xxx
+
+http://ip/yyy
+
+http://ip/douban/xxx
+
+http://ip/douban/yyy
+
+将URL中的douban/注册成一个独立的APP
+
+
+
+==1.创建一个新的APP==
+
+```powershell
+python manage.py startapp Douban
+```
+
+2.  在setting.py中添加自己的APP
+
+    `'Douban',`
+
+3.  在urls.py中配置APP的路径 ==注意路径后面一定要加/==
+
+    `path('douban/', include('Douban.urls'))`
+
+4.  在Douban目录里面编写一个urls.py文件
+
+5.  在views.py写好对应的函数接口
+
+6.  使用命令 `python manage.py inspectdb > models.py` 可以反向创建数据表 
+
+    反向生成的数据带着元数据 **managed = False** ，表示会以数据库的数据结构为准，防止误操作修改数据结构导致和数据库数据不符
+
+
+
+## views视图的编写
+
+views.py
+
+```python
+from django.shortcuts import render
+
+# Create your views here.
+from .models import T1
+from django.db.models import Avg
+from django.http import HttpResponse
+
+
+def books_short(request):
+    # 从models取数据传给template
+    shorts = T1.objects.all()
+    # 评论数量
+    counter = T1.objects.all().count()
+
+    # 平均星级
+    star_avg=f"{T1.objects.aggregate(Avg('n_star'))['n_star__avg']:0.1f}"
+
+    # 情感倾向
+    sent_avt=f"{T1.objects.aggregate(Avg('sentiment'))['sentiment__avg']:0.2f}"
+
+    # 正向数量
+    queryset = T1.objects.values('sentiment')
+    condtions = {'sentiment__gte':0.5}  # 大于
+    plus = queryset.filter(**condtions).count() # 字典的形式
+
+    # 负向数量
+    queryset = T1.objects.values('sentiment')
+    condtions = {'sentiment__lt':0.5}   # 小于
+    minus = queryset.filter(**condtions).count()
+
+    return render(request, 'result.html', locals())
+    # return HttpResponse(f'平均星际：{star_avg},\
+    #                     情感倾向:{sent_avt},\
+    #                     正向数量:{plus},\
+    #                     负向数量:{minus}')
+```
+
+聚合功能： https://docs.djangoproject.com/zh-hans/2.2/topics/db/aggregation/
+
+`star_avg=f"{T1.objects.aggregate(Avg('n_star'))['n_star__avg']:0.1f}"`
+
+
+
+## 结合bootstrap模块进行开发
+
+继承其他html
+
+指定css的路径
+
+```html
+<!-- 继承其他html -->
+{% extends "base_layout.html" %} {% block title %}Welcome{% endblock %} 
+{% load static %}
+{% block head %}
+    <!-- 原有内容进行保留 -->
+    {{ block.super }}
+    <!-- 指定css路径 -->
+    <link rel="stylesheet" href="{% static 'css/timeline.css' %}">
+    <link rel="stylesheet" href="{% static 'css/morris.css' %}">
+{% endblock %} 
+{% block content %}
+```
+
+{}引用python中的变量，如下
+
+```html
+<div class="huge">{{ counter }}</div>
+<div class="huge">{{ star_avg }}</div>
+```
+
+for in 循环展示
+
+```html
+{% for short in shorts %}
+<tr>
+    <td>{{short.id}}</td>
+    <td>{{short.n_star}}</td>
+    <td>{{short.short}}</td>
+    <td>{{short.sentiment}}</td>
+</tr>
+```
+
+
+
+## 如何阅读Django的源代码
+
+入口 manage.py
+

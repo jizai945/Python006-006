@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     ##### 注册自己的APP
     'index',
+    'Douban',
 ]
 #### 中间件是request和response对象之间的钩子 注意不熟悉不要调整上下顺序
 MIDDLEWARE = [
@@ -104,7 +105,7 @@ DATABASES = {
     'default': {
         # 引擎
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangodb',
+        'NAME': 'db1',
         'USER': 'testuser',
         'PASSWORD': 'testpass',
         'HOST': '192.168.0.106',
