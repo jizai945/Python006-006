@@ -5,6 +5,7 @@ from django.shortcuts import render
 from .models import Ironmanorm
 from django.db.models import Avg
 from django.http import HttpResponse
+import time
 
 def comment(request):
     # 从models取数据传给template
@@ -14,3 +15,7 @@ def comment(request):
 
     # return HttpResponse('123')
     return render(request, 'index.html', locals())
+
+def test(request):
+    localtime = time.asctime( time.localtime(time.time()) )
+    return HttpResponse(f'当前时间:{localtime}')

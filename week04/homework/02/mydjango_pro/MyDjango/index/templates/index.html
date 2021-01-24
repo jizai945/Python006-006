@@ -16,11 +16,11 @@
     <a class="navbar-brand" href="/">首页</a>
     <form class="form-inline">
         <input class="form-control mr-sm-2" name="q" type="search" placeholder="搜索">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="searchClick()">搜索</button>
     </form>
 </nav>
 <div class="container">
-    <h3 class="mt-5 mb-3">电影名称：阿甘正传</h3>
+    <h3 class="mt-5 mb-3">电影名称：钢铁侠</h3>
     <table class="table">
         <thead class="thead-light">
         <tr>
@@ -43,4 +43,31 @@
     </table>
 </div>
 </body>
+    <script>
+        function searchClick() {
+           
+
+            var xmlhttp;
+            if (window.XMLHttpRequest)
+            {
+                //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+                xmlhttp=new XMLHttpRequest();
+            }
+            else
+            {
+                // IE6, IE5 浏览器执行代码
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange=function()
+            {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    alert('ajax请求成功  '+xmlhttp.responseText);                  
+                }
+            }
+            xmlhttp.open("GET","/index/test",true);
+            xmlhttp.send();
+        }
+    </script>
+
 </html>
