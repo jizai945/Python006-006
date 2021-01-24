@@ -138,7 +138,7 @@ class ParserThread(threading.Thread):
 if __name__ == '__main__':
 
     # 实例化一个引擎
-    dburl='mysql+pymysql://testuser:testpass@192.168.0.106:3306/testdb?charset=utf8mb4'
+    dburl='mysql+pymysql://testuser:testpass@192.168.0.106:3306/week04db?charset=utf8mb4'
     engine=create_engine(dburl, echo=True, encoding='utf-8', )
 
     Base.metadata.create_all(engine)
