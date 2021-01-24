@@ -812,3 +812,128 @@ for in 循环展示
 
 入口 manage.py
 
+
+
+#runserver 其实是一个文件
+
+`python manage.py runserver 8080`
+
+执行这个命令，django会执行五件事情:
+
++   1.  解析runserver 和 8080 等参数
++   2.  加载runserver文件
++   3.  检查INSTALLED_APPS 、IP端口号、ORM对象
++   4.  实例化WSGIserver
++   5.  动态创建一些类，去接受请求
+
+
+
+### manage.py 源码分析
+
+当执行 python manage.py runserver 8080
+
+1.  设置环境变量:
+
+`os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MyDjango.settings')`
+
+
+
+2.  try except的方式导入模块
+
+```python
+try:
+    from django.core.management import execute_from_command_line
+except ImportError as exc:
+    raise ImportError(
+        "Couldn't import Django. Are you sure it's installed and "
+        "available on your PYTHONPATH environment variable? Did you "
+        "forget to activate a virtual environment?"
+    ) from exc
+```
+
+
+
+3.  使用模块并传参
+    ` execute_from_command_line(sys.argv)`
+
+
+
+4.  会调用 `C:\Users\73885\AppData\Roaming\Python\Python37\site-packages\django\core\management\__init__.py`
+
+ init文件的**开头导入了很多的模块**，并调用了一个类进行实例化
+
+```python
+import functools
+import os
+import pkgutil
+import sys
+from collections import OrderedDict, defaultdict
+from difflib import get_close_matches
+from importlib import import_module
+
+import django
+from django.apps import apps
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+from django.core.management.base import (
+    BaseCommand, CommandError, CommandParser, handle_default_options,
+)
+from django.core.management.color import color_style
+from django.utils import autoreload
+
+```
+
+```python
+def execute_from_command_line(argv=None):
+    """Run a ManagementUtility."""
+    utility = ManagementUtility(argv)
+    utility.execute()
+
+```
+
+
+
+5.  ManagementUtility 中 先对参数的判断，后面有execute函数
+6.  settings.INSTALLED_APPS 加载我们的app文件
+
+7.  判断runserver命令，并做一些检查
+8.  判断是否help或者其他命令
+9.   如果是runserver 执行`self.fetch_command(runserver).run_from_argv(8080)`
+
+10.  get_commands获取命令的字典给commands变量
+11.  app_name = commands[subcommand]  其中subcommand为runserver，获取app名字
+
+12.  *if* isinstance(app_name, BaseCommand): 判断现有的runserver是否已经被加载
+
+13.  执行`klass = load_command_class(app_name, subcommand)`
+14.   导入模块
+
+```python
+def load_command_class(app_name, name):
+    """
+    Given a command name and an application name, return the Command
+    class instance. Allow all errors raised by the import process
+    (ImportError, AttributeError) to propagate.
+    """
+    module = import_module('%s.management.commands.%s' % (app_name, name))
+    return module.Command()
+```
+
+
+
+15.  通过 `module = import_module('%s.management.commands.%s' % (app_name, name))`判断我们输入的命令加载runserver文件
+
+C:\Users\73885\AppData\Roaming\Python\Python37\site-packages\django\contrib\staticfiles\management\commands\runserver.py
+
+
+
+16.  在runserver.py中有一个类 `class Command(RunserverCommand):`， 它的父类 `RunserverCommand`，通过父类执行 ==run_from_argv(8080)==
+17.   父类的文件路径为 C:\Users\73885\AppData\Roaming\Python\Python37\site-packages\django\core\management\commands\runserver.py
+18.  它的父类 BaseCommand， 路径 C:\Users\73885\AppData\Roaming\Python\Python37\site-packages\django\core\management\base.py
+19.  base.py中找到 run_from_argv， 其中 323 `self.execute(*args, **cmd_options)`, 通过这个execute去执行
+20.  另外最开始的runserver文件中有个重要的 函数 `def get_handler(*self*, **args*, ***options*):`
+
+21.  会调用父类的get_handler，里面执行了 `get_internal_wsgi_application`, 里面做了WSGI的初始化
+
+
+
