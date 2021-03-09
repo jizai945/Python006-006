@@ -11,7 +11,7 @@ import pymysql
 # FLUSH PRIVILEGES;
 
 #   连接的服务器    连接的远程用户名   密码     连接的数据库的名
-db = pymysql.connect(host="192.168.0.106", port=3306, user="testuser", password="testpass", database="testdb",charset='utf8mb4')
+db = pymysql.connect(host="localhost", port=3306, user="testuser", password="testpass", database="testdb",charset='utf8mb4')
 
 try:
     # 使用cursor（）方法创建一个游标对象 cursor

@@ -17,6 +17,10 @@
 
 5.7.32GA
 
+WSL下安装mysql: https://blog.csdn.net/weixin_43530726/article/details/91303898
+
+
+
 ```ubuntu
 # 查看有没有安装MySQL：
 sudo dpkg -l | grep mysql
